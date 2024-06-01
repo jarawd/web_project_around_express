@@ -1,8 +1,18 @@
 const usersRoute = require("express").Router();
-const { users } = require("../data/users.json");
+const fs = require("fs");
+const path = require("path");
+
+const usersPath = path.join(__dirname, "../data/users.json");
 
 usersRoute.get("/users", (req, res) => {
-  res.send(users);
+  fs.readFile(usersPath, { encoding: "utf8" }, (err, data) => {
+    if (err) {
+      res.status(500).send({ message: "Usuarios no encontrados" });
+      return;
+    }
+
+    res.send(JSON.parse(data));
+  });
 });
 
 module.exports = usersRoute;

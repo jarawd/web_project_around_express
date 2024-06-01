@@ -1,8 +1,18 @@
 const cardsRoute = require("express").Router();
-const { cards } = require("../data/cards.json");
+const fs = require("fs");
+const path = require("path");
+
+const cardsPath = path.join(__dirname, "../data/cards.json");
 
 cardsRoute.get("/cards", (req, res) => {
-  res.send(cards);
+  fs.readFile(cardsPath, { encoding: "utf8" }, (err, data) => {
+    if (err) {
+      res.status(500).send({ message: "Usuarios no encontrados" });
+      return;
+    }
+
+    res.send(JSON.parse(data));
+  });
 });
 
 module.exports = cardsRoute;

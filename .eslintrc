@@ -1,3 +1,5 @@
 {
-  "extends": "airbnb-base"
+  "extends": "airbnb-base",
+  "singleQuote": false,
+  "allow": ["foo_", "_bar"]
 }
