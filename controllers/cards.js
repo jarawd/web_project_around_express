@@ -4,7 +4,7 @@ module.exports.getCards = (req, res) => {
   Card.find({})
     .orFail(() => {
       const error = new Error("Cards not found");
-      error.status(404);
+      res.status(404);
       throw error;
     })
     .then((cards) => res.status(200).send({ data: cards }))
@@ -17,7 +17,7 @@ module.exports.createCard = (req, res) => {
   Card.create({ title, link, owner })
     .orFail(() => {
       const error = new Error("Invalid request");
-      error.status(400);
+      res.status(400);
       throw error;
     })
     .then((card) => res.status(200).send({ data: card }))
@@ -28,7 +28,7 @@ module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     .orFail(() => {
       const error = new Error("Invalid request");
-      error.status(400);
+      res.status(400);
       throw error;
     })
     .then((card) => res.status(200).send({ data: card }))

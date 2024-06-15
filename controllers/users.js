@@ -4,7 +4,7 @@ module.exports.getUsers = (req, res) => {
   User.find({})
     .orFail(() => {
       const error = new Error("Users not found");
-      error.status(404);
+      error.statusCode = 404;
       throw error;
     })
     .then((users) => res.send({ data: users }))
@@ -12,13 +12,13 @@ module.exports.getUsers = (req, res) => {
 };
 
 module.exports.getUserById = (req, res) => {
-  User.findById(req.params.userId)
+  User.findById(req.params.id)
     .orFail(() => {
       const error = new Error("Invalid request");
-      error.status(400);
+      res.statusCode = 400;
       throw error;
     })
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.json(user))
     .catch((err) => res.status(500).send({ error: err.message }));
 };
 
@@ -27,7 +27,7 @@ module.exports.createUser = (req, res) => {
   User.create({ name, about, avatar })
     .orFail(() => {
       const error = new Error("Invalid request");
-      error.status(400);
+      error.statusCode = 400;
       throw error;
     })
     .then((newUser) => res.send({ data: newUser }))
@@ -44,26 +44,28 @@ module.exports.updateProfile = (req, res) => {
   })
     .orFail(() => {
       const error = new Error("It is not possible to update the Profile");
-      error.status(400);
+      error.statusCode = 400;
       throw error;
     })
-    .then((user) => res.status(200).send({ data: user }))
+    .then((user) => {
+      res.status(200).json(user);
+    })
     .catch((err) => res.status(500).send({ error: err.message }));
 };
 
 module.exports.updateAvatar = (req, res) => {
   const userId = req.user._id;
-  const userAvatar = req.body;
-  User.findByIdAndUpdate(userId, userAvatar, {
+  const newAvatar = req.body;
+  User.findByIdAndUpdate(userId, newAvatar, {
     new: true,
     runValidators: true,
     upsert: true,
   })
     .orFail(() => {
       const error = new Error("It is not possible to update the Avatar");
-      error.status(400);
+      error.statusCode = 400;
       throw error;
     })
-    .then((avatar) => res.status(200).send({ data: avatar }))
-    .catch((err) => res.status(500).send({ error: err.message }));
+    .then((avatar) => res.status(200).json(avatar))
+    .catch((err) => res.status(500).json({ error: err.message }));
 };
